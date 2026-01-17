@@ -1,4 +1,7 @@
-# wow-rag
+# wow-rag【🧪 Beta公测版】
+
+【🧪 Beta公测版本提示：教程主体已完成，正在优化细节，欢迎大家提Issue反馈问题或建议。】
+
 
 
 RAG(Retrieval Augmented Generation)是一种结合了检索和生成的AI技术框架。它通过从知识库中检索相关信息来增强大语言模型的生成能力,可以帮助模型生成更准确、更可靠的回答。本项目旨在探索和实现RAG技术,包括文档处理、向量检索、prompt engineering等核心模块,帮助开发者更好地理解和应用RAG技术。
