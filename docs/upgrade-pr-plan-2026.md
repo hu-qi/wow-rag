@@ -15,6 +15,7 @@
 | #7 | `refactor: initialize backend query engine explicitly` | `fix/backend-config-env` | 将 query engine 初始化从 import 阶段移到 FastAPI startup。 | 依赖 #2；先合 #2，再 retarget 到 `main` |
 | #8 | `docs: note frontend CDN runtime requirements` | `main` | 说明当前前端依赖 CDN，离线或网络受限环境可能影响页面表现。 | 可独立 review / merge |
 | #9 | `test: add backend smoke check` | `refactor/backend-engine-init` | 增加 `/health` 健康检查接口和后端 smoke check 文档。 | 依赖 #2 和 #7；先合前置 PR，再 retarget 到 `main` |
+| #10 | `docs: add tutorial update plan` | `main` | 新增教程更新计划，梳理 README、Notebook、示例数据和后续教程任务。 | 可独立 review / merge |
 
 ## 建议合并顺序
 
@@ -24,11 +25,12 @@
 2. #5 — `docs: fix contributing links`
 3. #4 — `docs: clarify cross-platform quickstart`
 4. #8 — `docs: note frontend CDN runtime requirements`
-5. #3 — `fix: make frontend API base URL configurable`
-6. #6 — `fix: constrain backend dependency versions`
-7. #2 — `fix: load backend model config from env`
-8. #7 — `refactor: initialize backend query engine explicitly`
-9. #9 — `test: add backend smoke check`
+5. #10 — `docs: add tutorial update plan`
+6. #3 — `fix: make frontend API base URL configurable`
+7. #6 — `fix: constrain backend dependency versions`
+8. #2 — `fix: load backend model config from env`
+9. #7 — `refactor: initialize backend query engine explicitly`
+10. #9 — `test: add backend smoke check`
 
 ## 依赖关系说明
 
@@ -131,10 +133,22 @@ http://127.0.0.1:8080/chat.html
 
 如果处于离线或网络受限环境，需要预期页面样式、交互或 Markdown 渲染可能不完整。
 
+### 教程与 Notebook 验证
+
+围绕 #10 后续拆分任务，建议验证：
+
+- README 中提到的 `learn.ipynb` 是否应明确为 `backend/learn.ipynb`。
+- `backend/learn.ipynb` 是否能在干净环境中从头运行。
+- `docs/问答手册.txt` 是否仍适合作为快速体验示例数据。
+- `backend/base.py` 中“替换 site-packages 源码”的做法是否需要改写为历史兼容说明。
+
 ## 后续工作建议
 
 合并上述 PR 后，可以继续拆分以下任务：
 
-- `docs/update-tutorials`：逐章更新教程、notebook、命令和截图。
+- `docs/fix-notebook-path`：修正 README 中 Notebook 路径说明。
+- `docs/add-lesson-file-map`：增加课程章节和文件入口映射。
+- `docs/review-learn-notebook`：检查并更新 `backend/learn.ipynb`。
+- `docs/refresh-sample-data`：确认或替换 `docs/问答手册.txt` 示例数据。
 - `chore/dependency-lock`：在完成本地验证后考虑增加更严格的锁文件。
 - `frontend/local-assets-or-build`：若需要离线或产品化部署，再考虑引入本地依赖管理或前端构建流程。
