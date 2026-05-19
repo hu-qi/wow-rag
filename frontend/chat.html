@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
     <link href="https://ai-public.mastergo.com/gen_page/tailwind-custom.css" rel="stylesheet"/>
-    <style id="animation-styles"> 
-        @keyframes gradient { 
-            0% { background-position: 0% 50%; } 
-            50% { background-position: 100% 50%; } 
-            100% { background-position: 0% 50%; } 
+    <style id="animation-styles">
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -31,7 +31,7 @@
             <div class="animate-pulse absolute w-64 h-64 bg-custom/10 rounded-full -top-32 -left-32"></div>
             <div class="animate-pulse absolute w-96 h-96 bg-blue-200/20 rounded-full -bottom-48 -right-48"></div>
         </div>
-        
+
         <div class="container mx-auto h-full max-w-4xl px-4 py-6 flex flex-col">
             <div id="chatContainer" class="flex-1 overflow-y-auto mb-4 space-y-4 h-[calc(100%-120px)] z-20">
                 <div v-for="item in messageList.filter((v) => v.role !== 'system')" class="flex" :class="{ 'justify-start': item.role === 'me', 'justify-end': item.role !== 'me' }">
@@ -63,23 +63,28 @@
         </div>
     </div>
     <script>
-        async function fetchStream(param) {  
-            const url = `http://127.0.0.1:5000/stream_chat?param=${encodeURIComponent(param)}`;
-            const response = await fetch(url);  
-            const reader = response.body.getReader();  
+        const API_BASE_URL = window.WOWRAG_API_BASE_URL || 'http://127.0.0.1:5000';
 
-            while (true) {  
-                const { value, done } = await reader.read();  
+        async function fetchStream(param) {
+            const url = `${API_BASE_URL}/stream_chat?param=${encodeURIComponent(param)}`;
+            const response = await fetch(url);
+            if (!response.ok || !response.body) {
+                throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+            }
+            const reader = response.body.getReader();
 
-                if (done) {  
-                    statusvue.isTalking = false;  
-                    break; 
-                }  
+            while (true) {
+                const { value, done } = await reader.read();
 
-                const text = new TextDecoder("utf-8").decode(value);  
+                if (done) {
+                    statusvue.isTalking = false;
+                    break;
+                }
+
+                const text = new TextDecoder("utf-8").decode(value);
                 let len = statusvue.messageList.length;
-                statusvue.messageList[len-1].content += text; 
-            }  
+                statusvue.messageList[len-1].content += text;
+            }
         }
 
         const app = Vue.createApp({
@@ -101,23 +106,24 @@
                     const userMessage = this.messageContent.trim();
                     if (!userMessage) return;
 
-                    // 添加用户消息
                     this.messageList.push({ "role": "me", "content": userMessage });
                     const message = document.getElementById('chatContainer');
                     message.scrollTop = message.scrollHeight;
 
-                    // 添加助手消息占位符
                     this.messageList.push({ "role": "GPT", "content": "" });
                     this.isTalking = true;
 
-                    // 发送请求
-                    fetchStream(userMessage).then(() => {
-                        this.isTalking = false;
-                    });
+                    fetchStream(userMessage)
+                        .catch((error) => {
+                            let len = this.messageList.length;
+                            this.messageList[len - 1].content = `请求失败：${error.message}`;
+                        })
+                        .finally(() => {
+                            this.isTalking = false;
+                        });
 
                     this.messageContent = '';
                 },
-                // 新增方法：将 Markdown 转换为 HTML
                 markdownToHtml(markdown) {
                     return marked.parse(markdown);
                 }
@@ -149,8 +155,6 @@
                     app.classList.remove('hidden');
                 }, 1000);
             }, 2000);
-
-
 
             function updateVolumeIcon(value) {
                 let icon = 'fa-volume-up';
