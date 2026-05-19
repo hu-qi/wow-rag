@@ -13,6 +13,7 @@
 | #5 | `docs: fix contributing links` | `main` | 修复 README 中空的 Issue / Discussion 链接。 | 可独立 review / merge |
 | #6 | `fix: constrain backend dependency versions` | `main` | 为后端依赖增加版本范围，降低重新安装环境时的复现风险。 | 可独立 review / merge，但建议本地安装验证后再 merge |
 | #7 | `refactor: initialize backend query engine explicitly` | `fix/backend-config-env` | 将 query engine 初始化从 import 阶段移到 FastAPI startup。 | 依赖 #2；先合 #2，再 retarget 到 `main` |
+| #8 | `docs: note frontend CDN runtime requirements` | `main` | 说明当前前端依赖 CDN，离线或网络受限环境可能影响页面表现。 | 可独立 review / merge |
 
 ## 建议合并顺序
 
@@ -21,10 +22,11 @@
 1. #1 — `docs: add 2026 upgrade audit plan`
 2. #5 — `docs: fix contributing links`
 3. #4 — `docs: clarify cross-platform quickstart`
-4. #3 — `fix: make frontend API base URL configurable`
-5. #6 — `fix: constrain backend dependency versions`
-6. #2 — `fix: load backend model config from env`
-7. #7 — `refactor: initialize backend query engine explicitly`
+4. #8 — `docs: note frontend CDN runtime requirements`
+5. #3 — `fix: make frontend API base URL configurable`
+6. #6 — `fix: constrain backend dependency versions`
+7. #2 — `fix: load backend model config from env`
+8. #7 — `refactor: initialize backend query engine explicitly`
 
 ## 依赖关系说明
 
@@ -76,11 +78,23 @@ python -m http.server 8080 --bind 0.0.0.0
 http://127.0.0.1:8080/chat.html
 ```
 
+### 前端 CDN 验证
+
+打开浏览器开发者工具，确认下列资源可以正常加载：
+
+- Vue
+- Tailwind
+- Marked
+- Font Awesome
+- Google Fonts / 项目样式资源
+
+如果处于离线或网络受限环境，需要预期页面样式、交互或 Markdown 渲染可能不完整。
+
 ## 后续工作建议
 
 合并上述 PR 后，可以继续拆分以下任务：
 
-- `docs/frontend-runtime-notes`：说明前端依赖 CDN，网络受限环境可能受影响。
 - `docs/update-tutorials`：逐章更新教程、notebook、命令和截图。
 - `test/backend-smoke-check`：增加最小后端 smoke test 或健康检查。
 - `chore/dependency-lock`：在完成本地验证后考虑增加更严格的锁文件。
+- `frontend/local-assets-or-build`：若需要离线或产品化部署，再考虑引入本地依赖管理或前端构建流程。
