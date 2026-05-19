@@ -14,6 +14,7 @@
 | #6 | `fix: constrain backend dependency versions` | `main` | 为后端依赖增加版本范围，降低重新安装环境时的复现风险。 | 可独立 review / merge，但建议本地安装验证后再 merge |
 | #7 | `refactor: initialize backend query engine explicitly` | `fix/backend-config-env` | 将 query engine 初始化从 import 阶段移到 FastAPI startup。 | 依赖 #2；先合 #2，再 retarget 到 `main` |
 | #8 | `docs: note frontend CDN runtime requirements` | `main` | 说明当前前端依赖 CDN，离线或网络受限环境可能影响页面表现。 | 可独立 review / merge |
+| #9 | `test: add backend smoke check` | `refactor/backend-engine-init` | 增加 `/health` 健康检查接口和后端 smoke check 文档。 | 依赖 #2 和 #7；先合前置 PR，再 retarget 到 `main` |
 
 ## 建议合并顺序
 
@@ -27,6 +28,7 @@
 6. #6 — `fix: constrain backend dependency versions`
 7. #2 — `fix: load backend model config from env`
 8. #7 — `refactor: initialize backend query engine explicitly`
+9. #9 — `test: add backend smoke check`
 
 ## 依赖关系说明
 
@@ -43,6 +45,22 @@
 2. 将 #7 的 base 从 `fix/backend-config-env` 改为 `main`。
 3. 重新检查 diff，确认只剩初始化重构相关改动。
 4. 完成 backend startup 验证后再 merge #7。
+
+### #9 依赖 #7，且间接依赖 #2
+
+#9 增加后端 smoke check，依赖 #7 中的显式 query engine 初始化：
+
+- #2 提供环境变量配置基础。
+- #7 提供可检测的 query engine 初始化状态。
+- #9 在此基础上增加 `/health` 接口和 smoke check 文档。
+
+推荐流程：
+
+1. Review 并 merge #2。
+2. Retarget #7 到 `main`，review 并 merge #7。
+3. Retarget #9 到 `main`。
+4. 运行 `docs/backend-smoke-check.md` 中的验证流程。
+5. 验证通过后再 merge #9。
 
 ## 验证建议
 
@@ -63,6 +81,29 @@ pip install -r requirements.txt
 cp .env.example .env
 # 填入自己的 WOWRAG_API_KEY
 python main.py
+```
+
+### 后端 Smoke Check
+
+在后端启动后，打开另一个终端执行：
+
+```bash
+curl http://127.0.0.1:5000/health
+```
+
+期望返回：
+
+```json
+{
+  "status": "ok",
+  "query_engine_ready": true
+}
+```
+
+然后验证流式接口：
+
+```bash
+curl "http://127.0.0.1:5000/stream_chat?param=你好"
 ```
 
 ### 前端联调验证
@@ -95,6 +136,5 @@ http://127.0.0.1:8080/chat.html
 合并上述 PR 后，可以继续拆分以下任务：
 
 - `docs/update-tutorials`：逐章更新教程、notebook、命令和截图。
-- `test/backend-smoke-check`：增加最小后端 smoke test 或健康检查。
 - `chore/dependency-lock`：在完成本地验证后考虑增加更严格的锁文件。
 - `frontend/local-assets-or-build`：若需要离线或产品化部署，再考虑引入本地依赖管理或前端构建流程。
