@@ -10,44 +10,80 @@ RAG(Retrieval Augmented Generation)是一种结合了检索和生成的AI技术�
 
 ## 快速体验RAG
 
-- 第一步：克隆仓库到本地，克隆后，可以麻烦给我们点个star吗？鼓励我们做得更好！
+### 1. 克隆仓库
+
 ```bash
 git clone https://github.com/datawhalechina/wow-rag.git
+cd wow-rag
 ```
 
-- 第二步：用python自带的venv模块创建虚拟环境
-推荐使用python3.9以上版本。
-在wow-rag目录下打开终端，运行以下命令：
+### 2. 创建 Python 虚拟环境
+
+推荐使用 Python 3.9 及以上版本。
+
 ```bash
 python -m venv rag-venv
 ```
 
-- 第三步：激活Windows虚拟环境
-在第二步的终端环境中，运行以下命令：
-```bash
-.\rag-venv\Scripts\activate
+### 3. 激活虚拟环境
+
+Windows PowerShell：
+
+```powershell
+.\rag-venv\Scripts\Activate.ps1
 ```
 
+Windows CMD：
 
-- 第四步：安装依赖
-输入`cd backend`，进入到wow-rag/backend目录下，运行以下命令：
+```bat
+.\rag-venv\Scripts\activate.bat
+```
+
+macOS / Linux：
+
 ```bash
+source rag-venv/bin/activate
+```
+
+### 4. 安装后端依赖
+
+```bash
+cd backend
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-- 第五步：运行后端服务
-在wow-rag/backend目录下打开终端，运行以下命令：
+### 5. 启动后端服务
+
+确保当前目录为 `wow-rag/backend`，然后运行：
+
 ```bash
 python main.py
 ```
 
-- 第六步：运行前端页面
-在wow-rag/frontend目录下双击chat.html，在文本框中输入问题，然后点击发送按钮即可体验流式对话。
-或者，在wow-rag/frontend目录下打开终端，输入这行代码：
+后端默认监听：
+
+```text
+http://127.0.0.1:5000
+```
+
+### 6. 启动前端页面
+
+打开新的终端窗口，进入前端目录：
+
 ```bash
+cd frontend
 python -m http.server 8080 --bind 0.0.0.0
 ```
-然后在浏览器中输127.0.0.1:8080/chat.html即可体验流式对话。
+
+然后在浏览器中访问：
+
+```text
+http://127.0.0.1:8080/chat.html
+```
+
+也可以直接双击 `frontend/chat.html` 打开页面进行本地体验。
+
+> 提示：如果前端页面不能正常请求后端，请先确认 `python main.py` 已经在 `backend` 目录中启动，并且浏览器能够访问 `http://127.0.0.1:5000`。
 
 
 
