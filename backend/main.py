@@ -17,6 +17,14 @@ def startup_event():
     query_engine = create_query_engine()
 
 
+@app.get('/health')
+def health():
+    return {
+        "status": "ok" if query_engine is not None else "initializing",
+        "query_engine_ready": query_engine is not None,
+    }
+
+
 @app.get('/stream_chat')
 async def stream_chat(param: str = "你好"):
     if query_engine is None:
