@@ -35,6 +35,8 @@ python -m venv rag-venv
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
+`requirements.txt` 中对关键依赖设置了版本范围，用于降低重新安装环境时因大版本升级导致的复现风险。
+
 - 第五步：运行后端服务
 在wow-rag/backend目录下打开终端，运行以下命令：
 ```bash
