@@ -1,13 +1,18 @@
 import os
 from typing import Any, Generator, List
 
+import qdrant_client
 from dotenv import load_dotenv
-from openai import OpenAI
-from pydantic import Field
-
+from llama_index.core import SimpleDirectoryReader, StorageContext, VectorStoreIndex
 from llama_index.core.embeddings import BaseEmbedding
 from llama_index.core.llms import CompletionResponse, CustomLLM, LLMMetadata
 from llama_index.core.llms.callbacks import llm_completion_callback
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.response_synthesizers import get_response_synthesizer
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.vector_stores.qdrant import QdrantVectorStore
+from openai import OpenAI
+from pydantic import Field
 
 
 load_dotenv()
@@ -27,6 +32,9 @@ api_key = get_required_env("WOWRAG_API_KEY")
 base_url = os.getenv("WOWRAG_BASE_URL", "https://open.bigmodel.cn/api/paas/v4")
 chat_model = os.getenv("WOWRAG_CHAT_MODEL", "glm-4-flash")
 emb_model = os.getenv("WOWRAG_EMBED_MODEL", "embedding-3")
+docs_path = os.getenv("WOWRAG_DOCS_PATH", "../docs/问答手册.txt")
+qdrant_path = os.getenv("WOWRAG_QDRANT_PATH", "qdrant")
+qdrant_collection = os.getenv("WOWRAG_QDRANT_COLLECTION", "wenda")
 
 
 class OurLLM(CustomLLM):
@@ -120,41 +128,31 @@ class OurEmbeddings(BaseEmbedding):
         return self._get_text_embeddings(texts)
 
 
-llm = OurLLM(api_key=api_key, base_url=base_url, model_name=chat_model)
-embedding = OurEmbeddings(api_key=api_key, base_url=base_url, model_name=emb_model)
+def create_query_engine() -> RetrieverQueryEngine:
+    llm = OurLLM(api_key=api_key, base_url=base_url, model_name=chat_model)
+    embedding = OurEmbeddings(api_key=api_key, base_url=base_url, model_name=emb_model)
 
+    documents = SimpleDirectoryReader(input_files=[docs_path]).load_data()
 
-from llama_index.core import SimpleDirectoryReader, StorageContext, VectorStoreIndex
-from llama_index.vector_stores.qdrant import QdrantVectorStore
-import qdrant_client
+    qclient = qdrant_client.QdrantClient(path=qdrant_path)
+    vector_store = QdrantVectorStore(client=qclient, collection_name=qdrant_collection)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    index = VectorStoreIndex.from_documents(
+        documents,
+        storage_context=storage_context,
+        embed_model=embedding,
+    )
 
+    emb = embedding.get_text_embedding("你好呀呀")
+    dimensions = len(emb)
+    retriever = VectorIndexRetriever(
+        similarity_top_k=5,
+        index=index,
+        dimensions=dimensions,
+    )
 
-documents = SimpleDirectoryReader(input_files=["../docs/问答手册.txt"]).load_data()
-
-qclient = qdrant_client.QdrantClient(path="qdrant")
-vector_store = QdrantVectorStore(client=qclient, collection_name="wenda")
-storage_context = StorageContext.from_defaults(vector_store=vector_store)
-index = VectorStoreIndex.from_documents(
-    documents,
-    storage_context=storage_context,
-    embed_model=embedding,
-)
-
-from llama_index.core.retrievers import VectorIndexRetriever
-
-emb = embedding.get_text_embedding("你好呀呀")
-dimensions = len(emb)
-kwargs = {"similarity_top_k": 5, "index": index, "dimensions": dimensions}
-retriever = VectorIndexRetriever(**kwargs)
-
-
-from llama_index.core.response_synthesizers import get_response_synthesizer
-
-response_synthesizer = get_response_synthesizer(llm=llm, streaming=True)
-
-from llama_index.core.query_engine import RetrieverQueryEngine
-
-query_engine = RetrieverQueryEngine(
-    retriever=retriever,
-    response_synthesizer=response_synthesizer,
-)
+    response_synthesizer = get_response_synthesizer(llm=llm, streaming=True)
+    return RetrieverQueryEngine(
+        retriever=retriever,
+        response_synthesizer=response_synthesizer,
+    )
