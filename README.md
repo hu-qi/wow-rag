@@ -35,13 +35,31 @@ python -m venv rag-venv
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-- 第五步：运行后端服务
+- 第五步：配置模型服务环境变量
+在`wow-rag/backend`目录下复制环境变量示例文件，并填入自己的 API Key：
+```bash
+cp .env.example .env
+```
+
+至少需要配置：
+```bash
+WOWRAG_API_KEY=your_api_key_here
+```
+
+也可以按需配置 OpenAI 兼容服务地址和模型名称：
+```bash
+WOWRAG_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+WOWRAG_CHAT_MODEL=glm-4-flash
+WOWRAG_EMBED_MODEL=embedding-3
+```
+
+- 第六步：运行后端服务
 在wow-rag/backend目录下打开终端，运行以下命令：
 ```bash
 python main.py
 ```
 
-- 第六步：运行前端页面
+- 第七步：运行前端页面
 在wow-rag/frontend目录下双击chat.html，在文本框中输入问题，然后点击发送按钮即可体验流式对话。
 或者，在wow-rag/frontend目录下打开终端，输入这行代码：
 ```bash
@@ -114,4 +132,3 @@ python -m http.server 8080 --bind 0.0.0.0
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。
 
 *注：默认使用CC 4.0协议，也可根据自身项目情况选用其他协议*
-
