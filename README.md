@@ -47,7 +47,19 @@ python main.py
 ```bash
 python -m http.server 8080 --bind 0.0.0.0
 ```
-然后在浏览器中输127.0.0.1:8080/chat.html即可体验流式对话。
+然后在浏览器中输入 127.0.0.1:8080/chat.html 即可体验流式对话。
+
+默认情况下，前端会请求本机后端地址：
+```text
+http://127.0.0.1:5000
+```
+
+如果后端部署在其他地址，可以在 `frontend/chat.html` 中修改 `API_BASE_URL`，或在页面加载前设置：
+```html
+<script>
+  window.WOWRAG_API_BASE_URL = 'http://your-backend-host:5000';
+</script>
+```
 
 
 
