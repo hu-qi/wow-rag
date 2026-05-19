@@ -68,9 +68,9 @@ python -m http.server 8080 --bind 0.0.0.0
 
 ## 参与贡献
 
-- 如果你想参与到项目中来欢迎查看项目的 [Issue]() 查看没有被分配的任务。
-- 如果你发现了一些问题，欢迎在 [Issue]() 中进行反馈🐛。
-- 如果你对本项目感兴趣想要参与进来可以通过 [Discussion]() 进行交流💬。
+- 如果你想参与到项目中来，欢迎查看项目的 [Issues](https://github.com/datawhalechina/wow-rag/issues) 中还没有被分配的任务。
+- 如果你发现了一些问题，欢迎在 [Issues](https://github.com/datawhalechina/wow-rag/issues) 中进行反馈🐛。
+- 如果你对本项目感兴趣，欢迎通过 Issue 或邮件进行交流💬。
 - 或者直接发邮件到zishuco@163.com
 
 如果你对 Datawhale 很感兴趣并想要发起一个新的项目，欢迎查看 [Datawhale 贡献指南](https://github.com/datawhalechina/DOPMC#%E4%B8%BA-datawhale-%E5%81%9A%E5%87%BA%E8%B4%A1%E7%8C%AE)。
