@@ -60,6 +60,18 @@ python -m http.server 8080 --bind 0.0.0.0
 - 第4课：最脏最累的文档管理
 - 第5课：流式部署
 
+## 学习文件入口
+
+| 课程 | 相关文件 | 说明 |
+| :--- | :--- | :--- |
+| 第1课：手搓一个土得掉渣的RAG | `backend/learn.ipynb`、`docs/问答手册.txt` | 适合从 Notebook 和示例文档理解最小 RAG 流程。 |
+| 第2课：正式上路搞定模型 | `backend/learn.ipynb`、`backend/engine.py`、`backend/base.py` | 重点关注模型调用、embedding 和历史兼容代码。 |
+| 第3课：初步体验问答引擎 | `backend/engine.py` | 重点关注 retriever、response synthesizer 和 query engine 的组合。 |
+| 第4课：最脏最累的文档管理 | `docs/`、`backend/engine.py` | 重点关注文档加载、索引构建和向量数据库存储。 |
+| 第5课：流式部署 | `backend/main.py`、`frontend/chat.html` | 重点关注 FastAPI 流式接口和前端页面联调。 |
+
+> 说明：当前课程内容尚未完全拆分为独立 lesson 文件。上表先给出学习入口，后续可继续将 Notebook 和教程正文按章节拆分。
+
 ## 项目附属文件
 - base.py 可以用来替换Lib\site-packages\llama_index\embeddings\openai\base.py这个文件。其实就是修改了四行代码。懒人专用。我们不要做一个懒人，而是动动手自己照着教程找到源代码的文件修改指定的四行即可。希望你永远不要用到这个文件。
 - 本项目的前端页面chat.html，直接双击打开。在文本框中输入问题，然后点击发送按钮即可体验流式对话。
